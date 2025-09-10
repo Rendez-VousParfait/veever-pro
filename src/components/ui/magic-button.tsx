@@ -1,122 +1,97 @@
-"use client";
+'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { Button } from './button';
+import { ReactNode } from 'react';
 
 interface MagicButtonProps {
-  children: React.ReactNode;
+  children: ReactNode;
   onClick?: () => void;
-  variant?: "default" | "outline";
-  size?: "default" | "lg";
+  size?: 'sm' | 'md' | 'lg';
   className?: string;
+  type?: 'button' | 'submit';
+  disabled?: boolean;
 }
 
 export default function MagicButton({ 
   children, 
   onClick, 
-  variant = "default", 
-  size = "default",
-  className = ""
+  size = 'md', 
+  className = "",
+  type = 'button',
+  disabled = false
 }: MagicButtonProps) {
-  const [isClicked, setIsClicked] = useState(false);
-
-  const handleClick = () => {
-    setIsClicked(true);
-    setTimeout(() => setIsClicked(false), 600);
-    onClick?.();
+  const sizeClasses = {
+    sm: 'px-4 py-2 text-sm',
+    md: 'px-6 py-3 text-base',
+    lg: 'px-8 py-4 text-lg'
   };
 
   return (
-    <motion.div
-      className="relative inline-block"
-      whileHover={{ scale: 1.05 }}
+    <motion.button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={`
+        relative overflow-hidden rounded-xl font-semibold text-white
+        bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500
+        hover:from-cyan-400 hover:via-blue-400 hover:to-purple-400
+        disabled:opacity-50 disabled:cursor-not-allowed
+        ${sizeClasses[size]}
+        ${className}
+      `}
+      whileHover={{ 
+        scale: 1.05,
+        y: -2,
+      }}
       whileTap={{ scale: 0.95 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
     >
-      {/* Effet d'ondulation au clic */}
-      {isClicked && (
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg opacity-30"
-          initial={{ scale: 1, opacity: 0.3 }}
-          animate={{ scale: 2, opacity: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        />
-      )}
-      
-      {/* Particules magiques au hover */}
+      {/* Effet de brillance */}
       <motion.div
-        className="absolute inset-0 pointer-events-none"
-        whileHover="hover"
-        variants={{
-          hover: {
-            transition: {
-              staggerChildren: 0.1,
-            },
-          },
-        }}
-      >
-        {[...Array(6)].map((_, i) => (
+        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+        initial={{ x: '-100%' }}
+        whileHover={{ x: '100%' }}
+        transition={{ duration: 0.6 }}
+      />
+      
+      {/* Particules flottantes */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(8)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-1 h-1 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full"
+            className="absolute w-1 h-1 bg-white/60 rounded-full"
             style={{
-              left: `${20 + i * 10}%`,
-              top: `${20 + (i % 2) * 60}%`,
+              left: `${10 + i * 10}%`,
+              top: `${20 + i * 8}%`,
             }}
-            variants={{
-              hover: {
-                y: [-5, -15, -5],
-                opacity: [0, 1, 0],
-                scale: [0.5, 1, 0.5],
-              },
+            animate={{
+              y: [0, -15, 0],
+              opacity: [0, 1, 0],
             }}
             transition={{
-              duration: 1,
+              duration: 2,
+              delay: i * 0.1,
               repeat: Infinity,
               ease: "easeInOut",
             }}
           />
         ))}
-      </motion.div>
+      </div>
       
-      {/* Lueur magique */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-cyan-500/20 rounded-lg blur-lg"
-        animate={{
-          opacity: [0.3, 0.6, 0.3],
-        }}
-        transition={{
-          duration: 2,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      
-      {/* Bordure animée */}
-      <motion.div
-        className="absolute inset-0 rounded-lg"
-        style={{
-          background: 'linear-gradient(45deg, transparent, rgba(168, 85, 247, 0.4), transparent)',
-          backgroundSize: '200% 200%',
-        }}
-        animate={{
-          backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "linear",
-        }}
-      />
-      
-      <Button
-        variant={variant}
-        size={size}
-        onClick={handleClick}
-        className={`relative z-10 ${className}`}
-      >
+      {/* Contenu du bouton */}
+      <div className="relative z-10 flex items-center justify-center">
         {children}
-      </Button>
-    </motion.div>
+      </div>
+      
+      {/* Effet de halo */}
+      <motion.div
+        className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-400/20 via-blue-400/20 to-purple-400/20"
+        initial={{ opacity: 0 }}
+        whileHover={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      />
+    </motion.button>
   );
 } 

@@ -1,39 +1,33 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import ClientBody from "./ClientBody";
+import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Veever - Team Building & Séminaires à Bordeaux | Réservation en 3 clics",
-  description: "Organisez vos team buildings et séminaires à Bordeaux en petits groupes. Plateforme digitale simple, prestataires locaux authentiques, réservation instantanée.",
-  keywords: "team building Bordeaux, séminaire Bordeaux, événement entreprise, team building petits groupes, réservation team building, activités corporate Bordeaux",
-  openGraph: {
-    title: "Veever - Réinventez vos team buildings à Bordeaux",
-    description: "La solution digitale pour créer des moments de cohésion authentiques, réservables en 3 clics.",
-    type: "website",
-    locale: "fr_FR",
-    siteName: "Veever"
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Veever - Team Building & Séminaires à Bordeaux",
-    description: "Organisez vos team buildings en petits groupes avec des prestataires bordelais authentiques."
-  },
-  robots: {
-    index: true,
-    follow: true
-  }
+  title: "Valentin Levraud | Sound Designer & Audio Engineer",
+  description: "Valentin Levraud, Sound Designer & Audio Engineer. Créateur d'expériences sonores immersives et d'identités sonores uniques.",
+  keywords: "sound design, audio engineer, sound designer, audio, musique, cinéma, télévision, animation, identité sonore",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="fr" suppressHydrationWarning>
-      <body className={inter.className}>{children}</body>
+    <html lang="fr" className="dark">
+      <head>
+        <Script
+          crossOrigin="anonymous"
+          src="//unpkg.com/same-runtime/dist/index.global.js"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+      </head>
+      <body suppressHydrationWarning className="antialiased font-inter">
+        <ClientBody>{children}</ClientBody>
+      </body>
     </html>
   );
 } 
