@@ -1,29 +1,26 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
-import { getAnalytics } from 'firebase/analytics';
+// Firebase désactivé - Configuration temporaire
+// Pour réactiver Firebase, décommentez les imports et la configuration ci-dessous
 
-// Configuration Firebase
+// import { initializeApp } from 'firebase/app';
+// import { getAuth } from 'firebase/auth';
+// import { getFirestore } from 'firebase/firestore';
+// import { getStorage } from 'firebase/storage';
+// import { getAnalytics } from 'firebase/analytics';
+
+// Configuration Firebase désactivée
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  apiKey: "disabled",
+  authDomain: "disabled",
+  projectId: "disabled",
+  storageBucket: "disabled",
+  messagingSenderId: "disabled",
+  appId: "disabled",
+  measurementId: "disabled",
 };
 
-// Initialiser Firebase
-const app = initializeApp(firebaseConfig);
-
-// Initialiser les services Firebase
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
-
-// Initialiser Analytics (seulement côté client)
-export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
-
-export default app;
+// Services Firebase désactivés
+export const auth = null;
+export const db = null;
+export const storage = null;
+export const analytics = null;
+export default null;
