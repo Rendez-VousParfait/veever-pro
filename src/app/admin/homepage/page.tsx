@@ -3,18 +3,24 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useHomepageData } from "@/hooks/useCMSData";
+import { useHomepageSections } from "@/hooks/useFirebaseCMS";
+import { firebaseCMS } from "@/lib/cms/firebase-cms";
 
 export default function AdminHomepage() {
-  const { data: sectionsData, saveData, loading } = useHomepageData();
+  const { data: sectionsData, loading } = useHomepageSections();
   const [editingSection, setEditingSection] = useState<string | null>(null);
 
-  const handleSave = (sectionId: string, updatedData: any) => {
-    const updatedSections = sectionsData.map(section => 
-      section.id === sectionId ? { ...section, ...updatedData } : section
-    );
-    saveData(updatedSections);
-    setEditingSection(null);
+  const handleSave = async (sectionId: string, updatedData: any) => {
+    try {
+      const section = sectionsData.find(s => s.id === sectionId);
+      if (section) {
+        const updatedSection = { ...section, ...updatedData };
+        await firebaseCMS.saveHomepageSection(updatedSection);
+        setEditingSection(null);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    }
   };
 
   if (loading) {

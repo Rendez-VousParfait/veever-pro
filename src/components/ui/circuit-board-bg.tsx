@@ -69,7 +69,7 @@ export default function CircuitBoardBg() {
           {Array.from({ length: 12 }).map((_, i) => (
             <motion.div
               key={i}
-              className="absolute"
+              className="absolute rounded-full bg-blue-500/30"
               style={{
                 left: `${15 + (i % 4) * 25}%`,
                 top: `${20 + Math.floor(i / 4) * 30}%`,
@@ -94,7 +94,6 @@ export default function CircuitBoardBg() {
                 delay: Math.random() * 2,
                 ease: "easeInOut"
               }}
-              className="rounded-full bg-blue-500/30"
             />
           ))}
         </div>

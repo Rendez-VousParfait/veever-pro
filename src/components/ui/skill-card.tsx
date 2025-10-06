@@ -88,7 +88,7 @@ export default function SkillCard({ icon: Icon, title, description, color, delay
         
         {/* Effet de bordure animée */}
         <motion.div
-          className="absolute inset-0 rounded-xl"
+          className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           style={{
             background: `linear-gradient(45deg, transparent, ${color.replace('bg-gradient-to-r', '').replace('from-', 'rgba(').replace('to-', ', 0.4), rgba(').replace('-500', ', 0.6)')}, transparent)`,
             backgroundSize: '200% 200%',
@@ -101,7 +101,6 @@ export default function SkillCard({ icon: Icon, title, description, color, delay
             repeat: Infinity,
             ease: "linear",
           }}
-          className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         />
       </div>
     </motion.div>

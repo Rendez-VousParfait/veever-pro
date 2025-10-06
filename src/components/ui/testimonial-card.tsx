@@ -100,7 +100,7 @@ export default function TestimonialCard({
           transition={{ duration: 0.6, delay: delay + 0.4 }}
           viewport={{ once: true }}
         >
-          "{quote}"
+          &ldquo;{quote}&rdquo;
         </motion.blockquote>
         
         {/* Auteur */}

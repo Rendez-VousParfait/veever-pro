@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from "next/link";
 import Image from "next/image";
+import { useContactData } from "@/hooks/useFirebaseCMS";
 
 const faqs = [
   {
@@ -101,8 +102,7 @@ export default function Contact() {
       {/* Hero Section */}
       <section className="text-center px-6 mb-20">
         <h1 className="text-huge font-special text-white mb-12 leading-none tracking-tight">
-          CONTACTEZ-MOI<br />
-          & DÉMARRONS
+          Des évènements sur-mesure qui valorisent votre marque employeur à Bordeaux
         </h1>
       </section>
 

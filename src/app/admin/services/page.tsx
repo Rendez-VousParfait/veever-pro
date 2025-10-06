@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useServicesData } from "@/hooks/useCMSData";
+import { useServices } from "@/hooks/useFirebaseCMS";
+import { firebaseCMS } from "@/lib/cms/firebase-cms";
 import YouTubeVideo from "@/components/YouTubeVideo";
 
 // Fonction utilitaire pour extraire l'ID YouTube d'une URL
@@ -46,30 +47,42 @@ const processSteps = [
 ];
 
 export default function AdminServices() {
-  const { data: services, saveData: saveServices, loading: servicesLoading } = useServicesData();
-  const [editingService, setEditingService] = useState<number | null>(null);
+  const { data: services, loading: servicesLoading } = useServices();
+  const [editingService, setEditingService] = useState<string | null>(null);
   const [editingProcess, setEditingProcess] = useState<number | null>(null);
   const [showAddService, setShowAddService] = useState(false);
   const [process, setProcess] = useState(processSteps);
 
-  const handleSaveService = (serviceId: number, updatedData: any) => {
-    const updatedServices = services.map(service => 
-      service.id === serviceId ? { ...service, ...updatedData } : service
-    );
-    saveServices(updatedServices);
-    setEditingService(null);
+  const handleSaveService = async (serviceId: string, updatedData: any) => {
+    try {
+      const service = services.find(s => s.id === serviceId);
+      if (service) {
+        const updatedService = { ...service, ...updatedData };
+        await firebaseCMS.saveService(updatedService);
+        setEditingService(null);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    }
   };
 
-  const handleAddService = (newService: any) => {
-    const id = Math.max(...services.map(s => s.id)) + 1;
-    const updatedServices = [...services, { ...newService, id }];
-    saveServices(updatedServices);
-    setShowAddService(false);
+  const handleAddService = async (newService: any) => {
+    try {
+      const id = Date.now().toString();
+      const service = { ...newService, id, order: services.length + 1 };
+      await firebaseCMS.saveService(service);
+      setShowAddService(false);
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout:', error);
+    }
   };
 
-  const handleDeleteService = (serviceId: number) => {
-    const updatedServices = services.filter(service => service.id !== serviceId);
-    saveServices(updatedServices);
+  const handleDeleteService = async (serviceId: string) => {
+    try {
+      await firebaseCMS.deleteService(serviceId);
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+    }
   };
 
   const handleSaveProcess = (stepIndex: number, updatedData: any) => {

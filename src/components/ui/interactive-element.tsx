@@ -53,7 +53,7 @@ export default function InteractiveElement({
             x: mousePosition.x,
             y: mousePosition.y
           },
-          transition: { type: "spring", stiffness: 300, damping: 20 }
+          transition: { type: "spring" as any, stiffness: 300, damping: 20 }
         };
       
       case 'ripple':
@@ -79,7 +79,7 @@ export default function InteractiveElement({
             scale: currentIntensity.scale,
             rotateX: 5
           },
-          transition: { type: "spring", stiffness: 300, damping: 20 }
+          transition: { type: "spring" as any, stiffness: 300, damping: 20 }
         };
       
       case 'tilt':
@@ -89,7 +89,7 @@ export default function InteractiveElement({
             rotateY: currentIntensity.rotate,
             rotateX: -currentIntensity.rotate / 2
           },
-          transition: { type: "spring", stiffness: 300, damping: 20 }
+          transition: { type: "spring" as any, stiffness: 300, damping: 20 }
         };
       
       default:

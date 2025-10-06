@@ -1,5 +1,8 @@
+'use client';
+
 import Link from "next/link";
 import Image from "next/image";
+import { useAboutData } from "@/hooks/useFirebaseCMS";
 
 const clients = [
   {

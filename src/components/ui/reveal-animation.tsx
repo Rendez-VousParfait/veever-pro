@@ -1,105 +1,111 @@
-"use client";
+'use client';
 
-import { motion } from 'framer-motion';
-import { ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-interface RevealAnimationProps {
-  children: ReactNode;
-  variant?: 'slide' | 'scale' | 'rotate' | 'blur' | 'wave';
+interface RevealOnScrollProps {
+  children: React.ReactNode;
+  className?: string;
   delay?: number;
+}
+
+export function RevealOnScroll({ children, className = "", delay = 0 }: RevealOnScrollProps) {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            setIsVisible(true);
+          }, delay);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, [delay]);
+
+  return (
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ${
+        isVisible 
+          ? 'opacity-100 translate-y-0' 
+          : 'opacity-0 translate-y-8'
+      } ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+interface CounterProps {
+  end: number;
   duration?: number;
+  suffix?: string;
   className?: string;
 }
 
-export default function RevealAnimation({
-  children,
-  variant = 'slide',
-  delay = 0,
-  duration = 0.8,
-  className = ''
-}: RevealAnimationProps) {
-  const variants = {
-    slide: {
-      hidden: { opacity: 0, y: 60, scale: 0.95 },
-      visible: { 
-        opacity: 1, 
-        y: 0, 
-        scale: 1,
-        transition: {
-          duration,
-          delay,
-          ease: "easeOut"
+export function Counter({ end, duration = 2000, suffix = "", className = "" }: CounterProps) {
+  const [count, setCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isVisible) {
+          setIsVisible(true);
         }
-      }
-    },
-    scale: {
-      hidden: { opacity: 0, scale: 0.5, rotate: -10 },
-      visible: { 
-        opacity: 1, 
-        scale: 1, 
-        rotate: 0,
-        transition: {
-          duration,
-          delay,
-          ease: "backOut",
-          scale: { type: "spring", stiffness: 300, damping: 20 }
-        }
-      }
-    },
-    rotate: {
-      hidden: { opacity: 0, rotateX: -90, y: 50 },
-      visible: { 
-        opacity: 1, 
-        rotateX: 0, 
-        y: 0,
-        transition: {
-          duration,
-          delay,
-          ease: "easeOut"
-        }
-      }
-    },
-    blur: {
-      hidden: { opacity: 0, filter: 'blur(10px)', scale: 1.1 },
-      visible: { 
-        opacity: 1, 
-        filter: 'blur(0px)', 
-        scale: 1,
-        transition: {
-          duration,
-          delay,
-          ease: "easeOut"
-        }
-      }
-    },
-    wave: {
-      hidden: { opacity: 0, y: 50 },
-      visible: { 
-        opacity: 1, 
-        y: 0,
-        transition: {
-          duration,
-          delay,
-          ease: "easeOut",
-          y: {
-            type: "spring",
-            stiffness: 100,
-            damping: 12
-          }
-        }
-      }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
     }
-  };
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, [isVisible]);
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    let startTime: number;
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      
+      setCount(Math.floor(progress * end));
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [isVisible, end, duration]);
 
   return (
-    <motion.div
-      className={className}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
-      variants={variants[variant]}
-    >
-      {children}
-    </motion.div>
+    <div ref={ref} className={className}>
+      {count}{suffix}
+    </div>
   );
-} 
+}

@@ -2,16 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useAboutData } from "@/hooks/useCMSData";
+import { useAboutData } from "@/hooks/useFirebaseCMS";
+import { firebaseCMS } from "@/lib/cms/firebase-cms";
 
 export default function AdminAbout() {
-  const { data, saveData, loading } = useAboutData();
+  const { data, loading } = useAboutData();
   const [editingSection, setEditingSection] = useState<string | null>(null);
 
-  const handleSave = (section: string, updatedData: any) => {
-    const newData = { ...data, [section]: updatedData };
-    saveData(newData);
-    setEditingSection(null);
+  const handleSave = async (section: string, updatedData: any) => {
+    try {
+      const newData = { ...data, [section]: updatedData };
+      await firebaseCMS.saveAboutData(newData);
+      setEditingSection(null);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    }
   };
 
   if (loading) {

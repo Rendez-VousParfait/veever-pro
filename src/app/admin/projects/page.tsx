@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useProjectsData } from "@/hooks/useCMSData";
+import { useProjects } from "@/hooks/useFirebaseCMS";
+import { firebaseCMS } from "@/lib/cms/firebase-cms";
 import YouTubeVideo from "@/components/YouTubeVideo";
 
 // Fonction utilitaire pour extraire l'ID YouTube d'une URL
@@ -31,8 +32,8 @@ const categories = [
 ];
 
 export default function AdminProjects() {
-  const { data: projectsData, saveData, loading } = useProjectsData();
-  const [editingProject, setEditingProject] = useState<number | null>(null);
+  const { data: projectsData, loading } = useProjects();
+  const [editingProject, setEditingProject] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -40,24 +41,36 @@ export default function AdminProjects() {
     ? projectsData 
     : projectsData.filter(project => project.category === selectedCategory);
 
-  const handleSave = (projectId: number, updatedData: any) => {
-    const updatedProjects = projectsData.map(project => 
-      project.id === projectId ? { ...project, ...updatedData } : project
-    );
-    saveData(updatedProjects);
-    setEditingProject(null);
+  const handleSave = async (projectId: string, updatedData: any) => {
+    try {
+      const project = projectsData.find(p => p.id === projectId);
+      if (project) {
+        const updatedProject = { ...project, ...updatedData };
+        await firebaseCMS.saveProject(updatedProject);
+        setEditingProject(null);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    }
   };
 
-  const handleAdd = (newProject: any) => {
-    const id = Math.max(...projectsData.map(p => p.id)) + 1;
-    const updatedProjects = [...projectsData, { ...newProject, id }];
-    saveData(updatedProjects);
-    setShowAddForm(false);
+  const handleAdd = async (newProject: any) => {
+    try {
+      const id = Date.now().toString(); // Générer un ID unique
+      const project = { ...newProject, id, order: projectsData.length + 1 };
+      await firebaseCMS.saveProject(project);
+      setShowAddForm(false);
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout:', error);
+    }
   };
 
-  const handleDelete = (projectId: number) => {
-    const updatedProjects = projectsData.filter(project => project.id !== projectId);
-    saveData(updatedProjects);
+  const handleDelete = async (projectId: string) => {
+    try {
+      await firebaseCMS.deleteProject(projectId);
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+    }
   };
 
   if (loading) {

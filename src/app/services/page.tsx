@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useServicesData } from "@/hooks/useCMSData";
+import { useServices } from "@/hooks/useFirebaseCMS";
 import YouTubeVideo from "@/components/YouTubeVideo";
 
 const processSteps = [
@@ -29,7 +29,7 @@ const processSteps = [
 ];
 
 export default function Services() {
-  const { data: services, loading } = useServicesData();
+  const { data: services, loading } = useServices();
 
   if (loading) {
     return (

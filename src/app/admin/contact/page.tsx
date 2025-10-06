@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useContactData } from "@/hooks/useFirebaseCMS";
+import { firebaseCMS } from "@/lib/cms/firebase-cms";
 
 const contactData = {
   title: "CONTACTEZ-MOI & DÉMARRONS",
@@ -75,16 +77,29 @@ const contactData = {
 };
 
 export default function AdminContact() {
-  const [data, setData] = useState(contactData);
+  const { data, loading } = useContactData();
   const [editingSection, setEditingSection] = useState<string | null>(null);
 
-  const handleSave = (section: string, updatedData: any) => {
-    setData(prev => ({
-      ...prev,
-      [section]: updatedData
-    }));
-    setEditingSection(null);
+  const handleSave = async (section: string, updatedData: any) => {
+    try {
+      const newData = { ...data, [section]: updatedData };
+      await firebaseCMS.saveContactData(newData);
+      setEditingSection(null);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#050507] text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#050507] text-white">
@@ -236,7 +251,7 @@ export default function AdminContact() {
                         </span>
                       </div>
                     </div>
-                    {field.options && (
+                    {'options' in field && field.options && (
                       <div className="text-sm text-gray-400">
                         {field.options.length} options disponibles
                       </div>

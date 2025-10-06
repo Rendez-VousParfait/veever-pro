@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from "next/link";
 import Image from "next/image";
-import { useProjectsData } from "@/hooks/useCMSData";
+import { useProjects } from "@/hooks/useFirebaseCMS";
 import YouTubeVideo from "@/components/YouTubeVideo";
 
 const categories = [
@@ -15,9 +15,9 @@ const categories = [
 ];
 
 export default function Projects() {
-  const { data: projects, loading } = useProjectsData();
+  const { data: projects, loading } = useProjects();
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
 
   const filteredProjects = selectedCategory === 'all' 
     ? projects 
