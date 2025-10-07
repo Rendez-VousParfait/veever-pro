@@ -32,9 +32,22 @@ import {
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('onboarding');
+  const [activeFaqTab, setActiveFaqTab] = useState('services');
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [builderStep, setBuilderStep] = useState(1);
+
+  // Effet de scroll pour détecter le défilement
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      setIsScrolled(scrollTop > 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   const [builderData, setBuilderData] = useState({
     occasion: '',
     teamSize: '',
@@ -84,19 +97,28 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#FAF0ED] text-[#1a1a1a]">
-      {/* Header Sticky Minimal */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF0ED]/95 backdrop-blur-sm border-b border-[#F74AA1]/20 transition-all duration-300">
+      {/* Header normal */}
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'
+      } bg-[#FAF0ED]/95 backdrop-blur-sm border-b border-[#F74AA1]/20`}>
         <div className="container-veever">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
+          <div className="flex items-center justify-between h-16 md:h-20 px-4 md:px-6">
+            {/* Logo - Tout à gauche */}
             <div className="flex items-center">
-              <div className="text-2xl font-bold text-[#1a1a1a]">
-                VEEVER<span className="veever-gradient-text">PRO</span>
-              </div>
+              <Image
+                src="/images/logo/logo-veever-pro.png"
+                alt="Veever Pro"
+                width={3840}
+                height={1280}
+                className="h-20 md:h-64 w-auto"
+                priority
+              />
             </div>
 
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
+            {/* Navigation Desktop + CTA - Tout à droite */}
+            <div className="flex items-center space-x-2 md:space-x-8">
+              {/* Navigation Desktop */}
+              <nav className="hidden lg:flex items-center space-x-8">
               <Link href="#occasions" className="text-[#333333] hover:text-[#1a1a1a] transition-colors font-medium focus:outline-none focus:ring-2 focus:ring-[#F74AA1] focus:ring-offset-2 focus:ring-offset-[#FAF0ED] rounded">
                 Occasions
               </Link>
@@ -116,7 +138,7 @@ export default function Home() {
 
             {/* Mobile Menu Button */}
             <button 
-              className="md:hidden p-2 text-[#333333] hover:text-[#1a1a1a] transition-colors focus:outline-none focus:ring-2 focus:ring-[#F74AA1] focus:ring-offset-2 focus:ring-offset-[#FAF0ED] rounded"
+                className="lg:hidden p-2 text-[#333333] hover:text-[#1a1a1a] transition-colors focus:outline-none focus:ring-2 focus:ring-[#F74AA1] focus:ring-offset-2 focus:ring-offset-[#FAF0ED] rounded"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Ouvrir le menu"
             >
@@ -130,19 +152,22 @@ export default function Home() {
             </button>
 
             {/* CTA Buttons */}
-            <div className="flex items-center gap-3">
+              <div className="flex items-center space-x-2 md:space-x-4">
               <button 
                 onClick={() => setIsCalendlyOpen(true)}
-                className="btn-ghost text-sm px-4 py-2"
+                  className="hidden sm:block px-3 md:px-6 py-1 md:py-2 text-xs md:text-sm text-[#333333] hover:text-[#F74AA1] transition-colors font-medium border border-[#F74AA1]/30 rounded-full hover:border-[#F74AA1] hover:bg-[#F74AA1]/5"
               >
-                Planifier un appel découverte
+                  <span className="hidden md:inline">Planifier un RDV</span>
+                  <span className="md:hidden">RDV</span>
               </button>
               <button 
-                className="btn-primary magnetic-cta"
+                  className="px-3 md:px-6 py-1 md:py-2 bg-gradient-to-r from-[#F74AA1] to-[#F59E3F] text-white rounded-full text-xs md:text-sm font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105"
                 onClick={() => setIsBuilderOpen(true)}
               >
-              Demander un devis
+                  <span className="hidden md:inline">Demander un devis</span>
+                  <span className="md:hidden">Devis</span>
               </button>
+              </div>
             </div>
           </div>
         </div>
@@ -200,8 +225,66 @@ export default function Home() {
         )}
       </header>
 
+      {/* Bulle flottante avec raccourcis au scroll */}
+      <div className={`fixed top-2 md:top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 ${
+        isScrolled ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
+      }`}>
+        <div className="bg-white/95 backdrop-blur-xl rounded-full px-3 md:px-6 py-2 md:py-3 shadow-2xl border border-gray-200/30 max-w-[95vw] overflow-hidden">
+          <nav className="flex items-center space-x-0.5 md:space-x-1">
+            <Link 
+              href="#occasions" 
+              className="text-xs md:text-sm px-2 md:px-3 py-1 text-gray-700 hover:text-[#F74AA1] hover:bg-[#F74AA1]/10 rounded-full transition-all duration-300 font-medium"
+            >
+              <span className="hidden sm:inline">Occasions</span>
+              <span className="sm:hidden">Occ.</span>
+            </Link>
+            <Link 
+              href="#formats" 
+              className="text-xs md:text-sm px-2 md:px-3 py-1 text-gray-700 hover:text-[#F74AA1] hover:bg-[#F74AA1]/10 rounded-full transition-all duration-300 font-medium"
+            >
+              <span className="hidden sm:inline">Formats</span>
+              <span className="sm:hidden">Form.</span>
+            </Link>
+            <Link 
+              href="#pourquoi" 
+              className="text-xs md:text-sm px-2 md:px-3 py-1 text-gray-700 hover:text-[#F74AA1] hover:bg-[#F74AA1]/10 rounded-full transition-all duration-300 font-medium"
+            >
+              <span className="hidden sm:inline">Pourquoi nous</span>
+              <span className="sm:hidden">Pourq.</span>
+            </Link>
+            <Link 
+              href="#benefices" 
+              className="text-xs md:text-sm px-2 md:px-3 py-1 text-gray-700 hover:text-[#F74AA1] hover:bg-[#F74AA1]/10 rounded-full transition-all duration-300 font-medium"
+            >
+              <span className="hidden sm:inline">Bénéfices</span>
+              <span className="sm:hidden">Bénéf.</span>
+            </Link>
+            <Link 
+              href="#faq" 
+              className="text-xs md:text-sm px-2 md:px-3 py-1 text-gray-700 hover:text-[#F74AA1] hover:bg-[#F74AA1]/10 rounded-full transition-all duration-300 font-medium"
+            >
+              FAQ
+            </Link>
+            <div className="w-px h-4 md:h-6 bg-gray-300 mx-1 md:mx-2"></div>
+            <button 
+              onClick={() => setIsCalendlyOpen(true)}
+              className="text-xs px-2 md:px-3 py-1 text-gray-700 hover:text-[#F74AA1] hover:bg-[#F74AA1]/10 rounded-full transition-all duration-300 font-medium"
+            >
+              <span className="hidden sm:inline">Appel</span>
+              <span className="sm:hidden">RDV</span>
+            </button>
+            <button 
+              onClick={() => setIsBuilderOpen(true)}
+              className="px-3 md:px-4 py-1 bg-gradient-to-r from-[#F74AA1] to-[#F59E3F] text-white rounded-full text-xs md:text-sm font-semibold hover:shadow-lg transition-all duration-300"
+            >
+              Devis
+            </button>
+          </nav>
+        </div>
+      </div>
+
       {/* Hero Section Scrolly-Brand */}
-      <section className="relative min-h-screen flex items-center overflow-hidden pt-20">
+      <section className="relative min-h-screen flex items-center overflow-hidden pt-20 md:pt-24">
         {/* Fond WebGL Bordeaux stylisé */}
         <div className="absolute inset-0 opacity-30">
           <div className="w-full h-full bg-gradient-to-br from-[#F74AA1]/20 via-[#FB793F]/20 to-[#F59E3F]/20">
@@ -302,14 +385,14 @@ export default function Home() {
                   {
                     title: "Onboarding",
                     subtitle: "Intégration réussie",
-                    description: "Facilitez l'intégration de vos nouveaux talents grâce à des événements personnalisés qui favorisent une immersion rapide et efficace dans votre culture d'entreprise.",
+                    description: "Offrez aux nouveaux collaborateurs un moment fort dès leur arrivée. Une expérience partagée qui favorise leur intégration, crée un premier souvenir positif et renforce leur sentiment d'appartenance.",
                     benefits: ["Immersion culturelle", "Création de liens", "Réduction du turnover"],
                     gradient: "from-blue-500 to-blue-600",
                     icon: "👥"
                   },
                   {
                     title: "Célébrations",
-                    subtitle: "Reconnaissance authentique",
+                    subtitle: "Fêter les succès",
                     description: "Organisez des festivités mémorables pour marquer les succès de votre entreprise et renforcer la motivation de vos équipes avec des moments de reconnaissance authentiques.",
                     benefits: ["Motivation renforcée", "Fierté collective", "Rétention des talents"],
                     gradient: "from-purple-500 to-pink-500",
@@ -318,7 +401,7 @@ export default function Home() {
                   {
                     title: "Cohésion",
                     subtitle: "Esprit d'équipe",
-                    description: "Renforcez l'esprit d'équipe avec des activités collaboratives conçues pour améliorer la communication, la confiance et la collaboration entre vos collaborateurs.",
+                    description: "Créez des occasions authentiques de se retrouver en dehors du cadre professionnel. Des expériences pensées pour développer la complicité, l'écoute et l'efficacité collective.",
                     benefits: ["Communication améliorée", "Confiance mutuelle", "Performance collective"],
                     gradient: "from-orange-500 to-red-500",
                     icon: "🤝"
@@ -326,8 +409,8 @@ export default function Home() {
                   {
                     title: "Bien-être",
                     subtitle: "Équilibre professionnel",
-                    description: "Promouvez le bien-être de vos employés en proposant des initiatives axées sur la santé physique et mentale, créant un environnement de travail épanouissant.",
-                    benefits: ["Stress réduit", "Équilibre vie pro/perso", "Productivité optimisée"],
+                    description: "Proposez des événements qui améliorent concrètement la qualité de vie au travail : bien-être, équilibre, sens. En mettant en avant des partenaires locaux engagés, vous incarnez vos valeurs RSE auprès de vos collaborateurs.",
+                    benefits: ["Stress réduit", "Bien-être au travail", "Productivité optimisée"],
                     gradient: "from-green-500 to-teal-500",
                     icon: "🌱"
                   }
@@ -381,14 +464,13 @@ export default function Home() {
                     <div className="text-center mb-16">
                       <h3 className="text-5xl md:text-7xl font-bold mb-4 leading-tight">
                         <span className="bg-gradient-to-r from-[#F74AA1] via-[#FB793F] to-[#F59E3F] bg-clip-text text-transparent">
-                          Créez l'expérience parfaite
+                          Créez l'expérience parfaite pour votre équipe
                         </span>
-                        <br />
-                        <span className="text-[#1a1a1a]">pour votre équipe</span>
                       </h3>
                       <p className="text-2xl text-[#666666] font-light max-w-4xl mx-auto leading-relaxed mb-8">
-                        Pas de formule toute faite. Nous concevons chaque événement autour de vos besoins spécifiques, 
-                        votre culture d'entreprise et vos objectifs RH.
+                        Composez votre journée idéale en combinant différents temps forts.
+                        <br />
+                        Chaque module est conçu pour répondre à vos objectifs de cohésion, de bien-être ou de valorisation de vos collaborateurs.
                       </p>
                       <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#F74AA1]/10 to-[#F59E3F]/10 px-6 py-3 rounded-full border border-[#F74AA1]/20">
                         <div className="w-2 h-2 bg-[#F74AA1] rounded-full animate-pulse"></div>
@@ -405,59 +487,73 @@ export default function Home() {
                           <h4 className="text-2xl font-bold text-[#1a1a1a] mb-3">
                             Notre approche <span className="text-[#F74AA1]">modulaire</span>
                           </h4>
-                          <p className="text-[#666666] text-lg max-w-3xl mx-auto">
-                            Nous assemblons les éléments parfaits selon votre contexte : taille d'équipe, budget, 
-                            objectifs RH et contraintes logistiques
-                          </p>
                         </div>
 
                         {/* Composants modulaires */}
-                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                          {/* Accueil */}
+                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                           {/* Petit-déjeuner d'équipe */}
                           <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#F74AA1]/20">
                             <div className="text-center">
                               <div className="w-12 h-12 bg-gradient-to-r from-[#F74AA1] to-[#FB793F] rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
                                 <span className="text-white text-lg">☕</span>
                               </div>
-                              <h5 className="font-bold text-[#1a1a1a] mb-2">Accueil</h5>
-                              <p className="text-sm text-[#666666] mb-3">Petit-déj, café d'accueil</p>
-                              <div className="text-xs text-[#F74AA1] font-semibold">Optionnel</div>
+                               <h5 className="font-bold text-[#1a1a1a] mb-2">Petit-déjeuner d'équipe</h5>
+                               <p className="text-sm text-[#666666]">Démarrez la journée par un moment fédérateur qui casse les silos et favorise des échanges naturels entre collaborateurs.</p>
                             </div>
                           </div>
 
-                          {/* Activité matinale */}
+                           {/* Activité collaborative */}
                           <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#FB793F]/20">
                             <div className="text-center">
                               <div className="w-12 h-12 bg-gradient-to-r from-[#FB793F] to-[#F59E3F] rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                                <span className="text-white text-lg">🌅</span>
+                                 <span className="text-white text-lg">🤝</span>
                               </div>
-                              <h5 className="font-bold text-[#1a1a1a] mb-2">Activité matinale</h5>
-                              <p className="text-sm text-[#666666] mb-3">Team building, découverte</p>
-                              <div className="text-xs text-[#FB793F] font-semibold">Recommandé</div>
+                               <h5 className="font-bold text-[#1a1a1a] mb-2">Activité collaborative</h5>
+                               <p className="text-sm text-[#666666]">Stimulez l'entraide, la créativité et la confiance grâce à des défis collectifs adaptés à votre culture d'entreprise.</p>
                             </div>
                           </div>
 
-                          {/* Repas */}
+                           {/* Déjeuner convivial */}
                           <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#F59E3F]/20">
                             <div className="text-center">
                               <div className="w-12 h-12 bg-gradient-to-r from-[#F59E3F] to-[#F74AA1] rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
                                 <span className="text-white text-lg">🍽️</span>
                               </div>
-                              <h5 className="font-bold text-[#1a1a1a] mb-2">Repas</h5>
-                              <p className="text-sm text-[#666666] mb-3">Restaurant local, gastronomie</p>
-                              <div className="text-xs text-[#F59E3F] font-semibold">Essentiel</div>
+                               <h5 className="font-bold text-[#1a1a1a] mb-2">Déjeuner convivial</h5>
+                               <p className="text-sm text-[#666666]">Un repas partagé dans un cadre local authentique : l'occasion de renforcer les liens de manière informelle et inclusive.</p>
                             </div>
                           </div>
 
-                          {/* Activité après-midi */}
+                           {/* Découverte culturelle */}
                           <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#F74AA1]/20">
                             <div className="text-center">
                               <div className="w-12 h-12 bg-gradient-to-r from-[#F74AA1] to-[#FB793F] rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                                <span className="text-white text-lg">🎯</span>
+                                 <span className="text-white text-lg">🏛️</span>
                               </div>
-                              <h5 className="font-bold text-[#1a1a1a] mb-2">Activité après-midi</h5>
-                              <p className="text-sm text-[#666666] mb-3">Cohésion, créativité</p>
-                              <div className="text-xs text-[#F74AA1] font-semibold">Optionnel</div>
+                               <h5 className="font-bold text-[#1a1a1a] mb-2">Découverte culturelle</h5>
+                               <p className="text-sm text-[#666666]">Valorisez votre ancrage territorial en faisant découvrir le patrimoine bordelais à travers des expériences uniques (visite, dégustation, rencontre avec des artisans).</p>
+                             </div>
+                           </div>
+
+                           {/* Atelier bien-être */}
+                           <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#FB793F]/20">
+                             <div className="text-center">
+                               <div className="w-12 h-12 bg-gradient-to-r from-[#FB793F] to-[#F59E3F] rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+                                 <span className="text-white text-lg">🧘</span>
+                               </div>
+                               <h5 className="font-bold text-[#1a1a1a] mb-2">Atelier bien-être</h5>
+                               <p className="text-sm text-[#666666]">Offrez une pause ressourçante (yoga, méditation, massage) qui agit directement sur la qualité de vie au travail et la motivation des équipes.</p>
+                             </div>
+                           </div>
+
+                           {/* Afterwork festif */}
+                           <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-[#F59E3F]/20">
+                             <div className="text-center">
+                               <div className="w-12 h-12 bg-gradient-to-r from-[#F59E3F] to-[#F74AA1] rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
+                                 <span className="text-white text-lg">🎉</span>
+                               </div>
+                               <h5 className="font-bold text-[#1a1a1a] mb-2">Afterwork festif</h5>
+                               <p className="text-sm text-[#666666]">Clôturez la journée dans une ambiance décontractée qui renforce le sentiment d'appartenance et laisse un souvenir positif partagé.</p>
                             </div>
                           </div>
                         </div>
@@ -540,26 +636,26 @@ export default function Home() {
                             <div className="mb-4">
                               <div className="flex items-center gap-2 mb-2">
                                 <div className="w-3 h-3 bg-[#F59E3F] rounded-full"></div>
-                                <span className="text-sm font-semibold text-[#F59E3F]">Grande entreprise</span>
+                                <span className="text-sm font-semibold text-[#F59E3F]">Entreprise 50 personnes</span>
                               </div>
-                              <h5 className="font-bold text-[#1a1a1a] mb-2">Programme annuel</h5>
+                              <h5 className="font-bold text-[#1a1a1a] mb-2">Journée cohésion d'équipe</h5>
                             </div>
                             <div className="space-y-2 mb-4">
                               <div className="flex items-center gap-2 text-sm text-[#666666]">
                                 <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                                <span>4 événements par an</span>
+                                <span>Team building matinal + déjeuner</span>
                               </div>
                               <div className="flex items-center gap-2 text-sm text-[#666666]">
                                 <div className="w-2 h-2 bg-[#FB793F] rounded-full"></div>
-                                <span>Mix d'activités variées</span>
+                                <span>Découverte patrimoine bordelais</span>
                               </div>
                               <div className="flex items-center gap-2 text-sm text-[#666666]">
                                 <div className="w-2 h-2 bg-[#F59E3F] rounded-full"></div>
-                                <span>Suivi d'impact personnalisé</span>
+                                <span>Afterwork convivial</span>
                               </div>
                             </div>
                             <div className="text-xs text-[#666666] italic">
-                              "Cohésion durable, marque employeur renforcée"
+                              "Esprit d'équipe renforcé, communication améliorée"
                             </div>
                           </div>
                         </div>
@@ -588,7 +684,7 @@ export default function Home() {
                             </svg>
                           </button>
                           <div className="mt-4 text-center text-sm text-[#666666] font-semibold">
-                            ✓ Conseil personnalisé ✓ Proposition sur-mesure ✓ Zéro stress pour vous
+                            ✓ Conseil personnalisé ✓ Proposition sur-mesure ✓ Gestion complète
                           </div>
                         </div>
                       </div>
@@ -621,28 +717,27 @@ export default function Home() {
               </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-3">
-                                <h4 className="text-2xl font-bold text-[#1a1a1a]">Analyse stratégique</h4>
-                                <span className="px-3 py-1 bg-[#F74AA1]/10 text-[#F74AA1] text-sm font-semibold rounded-full">7 jours</span>
+                                <h4 className="text-2xl font-bold text-[#1a1a1a]">Analyse de vos enjeux</h4>
                               </div>
                               <p className="text-[#666666] text-lg leading-relaxed mb-4">
-                                Nous prenons le temps de vous écouter lors d'un ou plusieurs appels pour comprendre vos besoins, vos objectifs et votre vision de l'événement. Une relation humaine de proximité avant tout.
+                                Chaque événement commence par une phase d'écoute active. Nous explorons vos besoins RH et vos ambitions managériales afin de transformer un simple moment en levier stratégique de cohésion et de marque employeur.
                               </p>
-                              <div className="grid grid-cols-2 gap-3">
+                              <div className="grid grid-cols-1 gap-3">
                                 <div className="flex items-center gap-2 text-sm text-[#666666]">
                                   <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                                  <span>Appel de découverte</span>
+                                  <span>Identification claire de vos objectifs : cohésion, intégration, QVCT, RSE, célébration</span>
                   </div>
                                 <div className="flex items-center gap-2 text-sm text-[#666666]">
                                   <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                                  <span>Écoute de vos besoins</span>
+                                  <span>Ateliers d'échanges pour comprendre la réalité de vos équipes et leur culture</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-sm text-[#666666]">
                                   <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                                  <span>Compréhension des objectifs</span>
+                                  <span>Détection des leviers d'engagement les plus pertinents à activer</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-sm text-[#666666]">
                                   <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                                  <span>Relation de confiance</span>
+                                  <span>Recommandation du format d'événement le plus aligné à vos priorités</span>
                                 </div>
                               </div>
                             </div>
@@ -665,27 +760,26 @@ export default function Home() {
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-3">
                                 <h4 className="text-2xl font-bold text-[#1a1a1a]">Conception sur-mesure</h4>
-                                <span className="px-3 py-1 bg-[#F74AA1]/10 text-[#F74AA1] text-sm font-semibold rounded-full">5 jours</span>
                               </div>
                               <p className="text-[#666666] text-lg leading-relaxed mb-4">
-                                Nous concevons un programme unique en sélectionnant les meilleurs partenaires locaux et en créant une expérience parfaitement adaptée à vos besoins.
+                                Nous construisons un parcours unique, conçu avec vous, et ancré dans l'authenticité du territoire. L'expérience est pensée pour incarner vos valeurs et générer un impact durable.
                               </p>
-                              <div className="grid grid-cols-2 gap-3">
+                              <div className="grid grid-cols-1 gap-3">
                                 <div className="flex items-center gap-2 text-sm text-[#666666]">
                                   <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                                  <span>Sélection partenaires</span>
+                                  <span>Sélection des modules adaptés pour répondre à vos objectifs RH</span>
                   </div>
                                 <div className="flex items-center gap-2 text-sm text-[#666666]">
                                   <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                                  <span>Programme détaillé</span>
+                                  <span>Partenaires locaux choisis selon une charte qualité et un alignement de valeurs</span>
                 </div>
                                 <div className="flex items-center gap-2 text-sm text-[#666666]">
                                   <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                                  <span>Validation équipe</span>
+                                  <span>Assemblage d'un déroulé cohérent et engageant, pensé comme une histoire à vivre</span>
               </div>
                                 <div className="flex items-center gap-2 text-sm text-[#666666]">
                                   <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                                  <span>Devis personnalisé</span>
+                                  <span>Validation du programme en co-création avec vos équipes pour garantir l'adhésion</span>
                                 </div>
                               </div>
                             </div>
@@ -707,28 +801,27 @@ export default function Home() {
                   </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-3">
-                                <h4 className="text-2xl font-bold text-[#1a1a1a]">Exécution & suivi</h4>
-                                <span className="px-3 py-1 bg-[#F74AA1]/10 text-[#F74AA1] text-sm font-semibold rounded-full">Jour J</span>
+                                <h4 className="text-2xl font-bold text-[#1a1a1a]">Organisation clé en main</h4>
                 </div>
                               <p className="text-[#666666] text-lg leading-relaxed mb-4">
-                                Nous coordonnons tout le jour J et assurons un suivi post-événement pour mesurer l'impact et optimiser les prochaines expériences.
+                                Nous orchestrons chaque détail avec rigueur, pour que votre rôle se limite à profiter de l'expérience aux côtés de vos collaborateurs.
                               </p>
-                              <div className="grid grid-cols-2 gap-3">
+                              <div className="grid grid-cols-1 gap-3">
                                 <div className="flex items-center gap-2 text-sm text-[#666666]">
                                   <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                                  <span>Coordination complète</span>
+                                  <span>Gestion intégrale de la logistique et des prestataires</span>
                   </div>
                                 <div className="flex items-center gap-2 text-sm text-[#666666]">
                                   <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                                  <span>Animation événement</span>
+                                  <span>Un interlocuteur unique pour simplifier vos échanges et gagner du temps</span>
                 </div>
                                 <div className="flex items-center gap-2 text-sm text-[#666666]">
                                   <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                                  <span>Feedback équipe</span>
+                                  <span>Transmission d'un déroulé clair et structuré pour rassurer vos équipes</span>
               </div>
                                 <div className="flex items-center gap-2 text-sm text-[#666666]">
                                   <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                                  <span>Rapport d'impact</span>
+                                  <span>Garantie d'une expérience fluide, mémorable et alignée avec vos objectifs RH</span>
             </div>
           </div>
         </div>
@@ -858,142 +951,101 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section Avantages Convertisseurs */}
-      <section id="pourquoi" className="py-24 bg-gradient-to-b from-white to-[#FAF0ED]">
-        <div className="container-veever">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl font-bold mb-6 leading-tight">
+       {/* Section Avantages Convertisseurs - Version Spectaculaire */}
+       <section id="pourquoi" className="py-24 bg-gradient-to-br from-[#F74AA1]/5 via-white to-[#F59E3F]/5 relative overflow-hidden">
+         {/* Éléments décoratifs dynamiques */}
+         <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-r from-[#F74AA1]/10 to-transparent rounded-full -translate-x-48 -translate-y-48 animate-pulse"></div>
+         <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-l from-[#F59E3F]/10 to-transparent rounded-full translate-x-40 translate-y-40 animate-pulse delay-1000"></div>
+         
+         <div className="container-veever relative z-10">
+           {/* Titre impactant */}
+           <div className="text-center mb-16">
+             <h2 className="text-6xl font-bold mb-6 leading-tight">
               Pourquoi <span className="bg-gradient-to-r from-[#F74AA1] to-[#F59E3F] bg-clip-text text-transparent">Veever Pro</span> transforme votre marque employeur ?
             </h2>
-            <p className="text-xl text-[#666666] max-w-4xl mx-auto leading-relaxed">
-              Des événements d'entreprise qui génèrent un <strong>ROI mesurable</strong> sur l'engagement, la fidélisation et l'attractivité de vos talents
+             <p className="text-2xl text-[#666666] max-w-4xl mx-auto leading-relaxed font-light">
+               Nous transformons vos événements internes en leviers stratégiques de cohésion, d'engagement et de fidélisation.
+               <br />
+               Chaque expérience est conçue pour renforcer la fierté d'appartenance et incarner vos valeurs d'entreprise.
             </p>
           </div>
 
-          {/* Avantages principaux avec impact visuel */}
+           {/* Encarts principaux */}
           <div className="grid lg:grid-cols-2 gap-12 mb-20">
-            {/* Gain de temps */}
-            <div className="bg-white rounded-3xl p-8 shadow-xl border border-[#F74AA1]/10 hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
-              <div className="flex items-start gap-6">
-                <div className="w-20 h-20 bg-gradient-to-r from-[#F74AA1] to-[#FB793F] rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <Clock className="w-10 h-10 text-white" />
+             {/* Encart 1 - Impact RH */}
+             <div className="group relative bg-white rounded-3xl p-8 shadow-2xl border border-[#F74AA1]/20 hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] overflow-hidden">
+               <div className="absolute inset-0 bg-gradient-to-br from-[#F74AA1]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+               <div className="relative z-10">
+                 <div className="flex items-center gap-6 mb-6">
+                   <div className="w-24 h-24 bg-gradient-to-r from-[#F74AA1] to-[#FB793F] rounded-3xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300">
+                     <Target className="w-12 h-12 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-[#1a1a1a] mb-4">Gain de temps précieux pour vos RH</h3>
-                  <p className="text-[#666666] mb-6 text-lg leading-relaxed">
-                    Fini la coordination multi-prestataires ! Un seul interlocuteur, une seule facture, un planning géré pour vous.
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                      <span className="text-[#333333] font-medium">Coordination unique</span>
+                     <h3 className="text-3xl font-bold text-[#1a1a1a] mb-2">Un impact RH précieux</h3>
+                     <p className="text-[#F74AA1] font-semibold text-lg">pour vos équipes</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                      <span className="text-[#333333] font-medium">Facturation simplifiée</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-[#F74AA1] rounded-full"></div>
-                      <span className="text-[#333333] font-medium">Suivi personnalisé</span>
-                    </div>
-                  </div>
-                </div>
+                 <p className="text-[#666666] text-xl leading-relaxed">
+                   Nos événements ne sont pas de simples moments conviviaux : ils répondent à vos enjeux RH. Intégration réussie, cohésion renforcée, meilleure rétention des talents – chaque instant vécu contribue à la performance collective.
+                 </p>
               </div>
             </div>
 
-            {/* Impact mesurable */}
-            <div className="bg-white rounded-3xl p-8 shadow-xl border border-[#F59E3F]/10 hover:shadow-2xl transition-all duration-500 hover:scale-[1.02]">
-              <div className="flex items-start gap-6">
-                <div className="w-20 h-20 bg-gradient-to-r from-[#FB793F] to-[#F59E3F] rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <Target className="w-10 h-10 text-white" />
+             {/* Encart 2 - Ancrage territorial */}
+             <div className="group relative bg-white rounded-3xl p-8 shadow-2xl border border-[#F59E3F]/20 hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] overflow-hidden">
+               <div className="absolute inset-0 bg-gradient-to-br from-[#F59E3F]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+               <div className="relative z-10">
+                 <div className="flex items-center gap-6 mb-6">
+                   <div className="w-24 h-24 bg-gradient-to-r from-[#FB793F] to-[#F59E3F] rounded-3xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300">
+                     <MapPin className="w-12 h-12 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-[#1a1a1a] mb-4">Impact mesurable sur votre marque employeur</h3>
-                  <p className="text-[#666666] mb-6 text-lg leading-relaxed">
-                    Des résultats concrets sur la cohésion d'équipe, l'attractivité employeur et la fidélisation des talents.
-                  </p>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-[#F59E3F] rounded-full"></div>
-                      <span className="text-[#333333] font-medium">Cohésion renforcée</span>
+                     <h3 className="text-3xl font-bold text-[#1a1a1a] mb-2">Un ancrage territorial</h3>
+                     <p className="text-[#F59E3F] font-semibold text-lg">et culturel unique</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-[#F59E3F] rounded-full"></div>
-                      <span className="text-[#333333] font-medium">Attractivité améliorée</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 bg-[#F59E3F] rounded-full"></div>
-                      <span className="text-[#333333] font-medium">Fidélisation des talents</span>
-                    </div>
-                  </div>
-                </div>
+                 <p className="text-[#666666] text-xl leading-relaxed">
+                   Nous valorisons le tissu local en travaillant avec des partenaires bordelais sélectionnés pour leur fiabilité et leur authenticité. Vos collaborateurs vivent une expérience enracinée dans le territoire, qui fait rayonner vos engagements RSE.
+                 </p>
               </div>
             </div>
           </div>
 
-          {/* Différenciateurs clés */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                title: "Authentique & Local",
-                description: "Vos équipes (re)découvrent leur territoire avec des partenaires locaux authentiques",
-                icon: MapPin,
+           {/* Cartes différenciatrices */}
+           <div className="grid md:grid-cols-3 gap-8 mb-16">
+             {[
+               {
+                 title: "Simplicité opérationnelle",
+                 description: "Un interlocuteur unique, une organisation fluide : vous gagnez du temps, vos équipes gagnent en engagement.",
+                 icon: Settings,
                 color: "from-[#F74AA1] to-[#FB793F]"
               },
               {
-                title: "Clé en Main",
-                description: "Un seul interlocuteur, un seul paiement, zéro stress pour vous",
-                icon: Settings,
+                 title: "Expériences mémorables",
+                 description: "Des formats exclusifs et authentiques qui marquent durablement vos collaborateurs.",
+                 icon: Heart,
                 color: "from-[#FB793F] to-[#F59E3F]"
               },
               {
-                title: "Mémorable",
-                description: "Un récit unique, des attentions personnalisées, des souvenirs durables",
-                icon: Heart,
-                color: "from-[#F59E3F] to-[#F74AA1]"
-              },
-              {
-                title: "Orienté RH",
-                description: "Cohésion, QVT, attractivité, fidélisation : des objectifs RH concrets",
+                 title: "Alignement sur vos valeurs",
+                 description: "Des modules pensés pour refléter votre culture et renforcer la marque employeur.",
                 icon: Target,
-                color: "from-[#F74AA1] to-[#F59E3F]"
+                 color: "from-[#F59E3F] to-[#F74AA1]"
               }
             ].map((item, index) => (
-              <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:scale-105">
-                <div className="text-center">
-                  <div className={`w-16 h-16 bg-gradient-to-r ${item.color} rounded-2xl mx-auto mb-4 flex items-center justify-center`}>
-                    <item.icon className="w-8 h-8 text-white" />
+               <div key={index} className="group bg-white rounded-3xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:border-[#F74AA1]/30 relative overflow-hidden">
+                 <div className="absolute inset-0 bg-gradient-to-br from-white to-gray-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                 <div className="relative z-10 text-center">
+                   <div className={`w-20 h-20 bg-gradient-to-r ${item.color} rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                     <item.icon className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-[#1a1a1a] mb-3">{item.title}</h3>
-                  <p className="text-[#666666] text-sm leading-relaxed">{item.description}</p>
+                   <h3 className="text-xl font-bold text-[#1a1a1a] mb-4">{item.title}</h3>
+                   <p className="text-[#666666] leading-relaxed">{item.description}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* CTA de conversion */}
-          <div className="text-center mt-16">
-            <div className="bg-gradient-to-r from-[#F74AA1]/5 to-[#F59E3F]/5 rounded-3xl p-8 border border-[#F74AA1]/20 max-w-3xl mx-auto">
-              <h3 className="text-2xl font-bold text-[#1a1a1a] mb-4">Prêt à transformer vos événements RH ?</h3>
-              <p className="text-[#666666] mb-6 text-lg">
-                Découvrez comment nos événements sur-mesure peuvent renforcer votre marque employeur
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button 
-                  className="bg-gradient-to-r from-[#F74AA1] to-[#F59E3F] text-white rounded-2xl py-4 px-8 font-bold text-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                  onClick={() => window.location.href = '/creer-mon-projet'}
-                >
-                  Découvrir nos formats
-                </button>
-                <button 
-                  className="border-2 border-[#F74AA1] text-[#F74AA1] rounded-2xl py-4 px-8 font-bold text-lg hover:bg-[#F74AA1] hover:text-white transition-all duration-300"
-                  onClick={() => setIsCalendlyOpen(true)}
-                >
-                  Voir nos occasions RH
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -1019,48 +1071,303 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section FAQ */}
-      <section id="faq" className="py-24 bg-white/5">
+      {/* Section FAQ Organisée */}
+      <section id="faq" className="py-24 bg-gradient-to-br from-white/5 to-[#FAF0ED]/30">
         <div className="container-veever">
           <div className="text-center mb-16">
-            <h2 className="text-h2 mb-6">Questions fréquentes</h2>
+            <h2 className="text-5xl font-bold mb-6 text-[#1a1a1a]">
+              Questions <span className="bg-gradient-to-r from-[#F74AA1] to-[#F59E3F] bg-clip-text text-transparent">fréquentes</span>
+            </h2>
+            <p className="text-xl text-[#666666] max-w-3xl mx-auto">
+              Tout ce que vous devez savoir sur nos événements d'entreprise à Bordeaux
+            </p>
           </div>
 
-          <div className="max-w-3xl mx-auto space-y-4 md:space-y-6">
-            {[
-              {
-                question: "Quels événements d'entreprise proposez-vous à Bordeaux ?",
-                answer: "Onboarding, célébrations/anniversaires, cohésion/team building et bien-être/QVT, en formats demi-journée, journée ou programme annuel."
-              },
-              {
-                question: "En quoi vos événements renforcent-ils la marque employeur ?",
-                answer: "Nous concevons des expériences ancrées localement, scénarisées et mémorables, avec un avant/pendant/après (livret, souvenirs, feedback) qui nourrit la cohésion et l'attractivité."
-              },
-              {
-                question: "Peut-on personnaliser selon nos valeurs et nos contraintes ?",
-                answer: "Oui. Nous adaptons le rythme, les thématiques et les attentions, sans afficher publiquement nos prestataires."
-              },
-              {
-                question: "Est-ce adapté aux petites entreprises ?",
-                answer: "Oui. Nos formats Essentiel et Immersion sont pensés pour les PME/startups, avec une logistique simple et un budget maîtrisé."
-              },
-              {
-                question: "Proposez-vous un accompagnement récurrent ?",
-                answer: "Notre format Premium planifie 4 moments RH clés par an, avec suivi d'impact et chef de projet dédié."
+          {/* Navigation par thématiques */}
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-wrap justify-center gap-3 mb-12">
+              {[
+                { id: 'services', label: '🎯 Nos Services', icon: '🎯' },
+                { id: 'logistique', label: '📍 Logistique', icon: '📍' },
+                { id: 'organisation', label: '⏰ Organisation', icon: '⏰' },
+                { id: 'personnalisation', label: '🎨 Personnalisation', icon: '🎨' },
+                { id: 'tarifs', label: '💰 Tarifs', icon: '💰' },
+                { id: 'accessibilite', label: '♿ Accessibilité', icon: '♿' },
+                { id: 'securite', label: '🔒 Sécurité', icon: '🔒' },
+                { id: 'options', label: '🎁 Options', icon: '🎁' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveFaqTab(tab.id)}
+                  className={`px-6 py-3 rounded-2xl font-semibold transition-all duration-300 ${
+                    activeFaqTab === tab.id
+                      ? 'bg-gradient-to-r from-[#F74AA1] to-[#F59E3F] text-white shadow-lg'
+                      : 'bg-white text-[#666666] hover:bg-[#F74AA1]/10 hover:text-[#F74AA1] border border-gray-200'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Contenu FAQ par thématique */}
+            <div className="space-y-6">
+              {/* Services & Approche */}
+              {activeFaqTab === 'services' && (
+                <div className="space-y-6">
+                  {[
+                    {
+                      question: "Quels types d'événements organisez-vous à Bordeaux ?",
+                      answer: "Onboarding, célébrations/anniversaires, cohésion & team building, bien-être/QVCT, afterworks, parcours culturels, journées thématiques (Noël, rentrée, kick-off), et programmes récurrents."
+                    },
+                    {
+                      question: "C'est quoi votre approche modulaire concrètement ?",
+                      answer: "On assemble des \"briques\" (petit-déjeuner, activité collaborative, déjeuner, découverte culturelle, atelier bien-être, afterwork) pour construire votre journée idéale, alignée à vos objectifs RH."
+                    },
+                    {
+                      question: "Que comprend votre accompagnement ?",
+                      answer: "Cadrage des objectifs, conception sur-mesure, sélection et coordination des partenaires, logistique complète jour J, interlocuteur unique et rétro-planning clair."
+                    },
+                    {
+                      question: "Qu'est-ce qui n'est pas inclus par défaut ?",
+                      answer: "Transport dédié, captation photo/vidéo, matériel technique spécifique, privatisations totales haut de gamme. Disponibles en option."
+                    }
+                  ].map((faq, index) => (
+                    <div key={index} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                      <details className="group">
+                        <summary className="flex items-center justify-between cursor-pointer">
+                          <h3 className="text-xl font-bold text-[#1a1a1a] pr-4">{faq.question}</h3>
+                          <ChevronRight className="w-6 h-6 text-[#F74AA1] group-open:rotate-90 transition-transform flex-shrink-0" />
+                        </summary>
+                        <div className="mt-6 pt-6 border-t border-gray-100">
+                          <p className="text-[#666666] leading-relaxed text-lg">{faq.answer}</p>
+                        </div>
+                      </details>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Logistique */}
+              {activeFaqTab === 'logistique' && (
+                <div className="space-y-6">
+                  {[
+                    {
+                      question: "Dans quelles zones intervenez-vous ?",
+                      answer: "Bordeaux et sa métropole en priorité. Bassin d'Arcachon et Gironde élargie sur demande."
+                    },
+                    {
+                      question: "Pour combien de participants ?",
+                      answer: "Idéal pour 5 à 30 personnes. Au-delà, on adapte (privatisations, multi-groupes, rotations) sur devis."
+                    },
+                    {
+                      question: "Pouvez-vous intervenir dans nos locaux ?",
+                      answer: "Oui, si l'activité s'y prête (atelier, bien-être, petit-déjeuner, afterwork). Sinon, nous proposons une alternative proche."
+                    },
+                    {
+                      question: "Et si la météo se dégrade ?",
+                      answer: "Plan B prévu à la conception (lieu couvert, variante d'activité) et bascule rapide si nécessaire."
               }
             ].map((faq, index) => (
-              <div key={index} className="card-premium">
+                    <div key={index} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
                 <details className="group">
                   <summary className="flex items-center justify-between cursor-pointer">
-                    <h3 className="text-h3">{faq.question}</h3>
-                    <ChevronRight className="w-6 h-6 text-[#333333] group-open:rotate-90 transition-transform" />
+                          <h3 className="text-xl font-bold text-[#1a1a1a] pr-4">{faq.question}</h3>
+                          <ChevronRight className="w-6 h-6 text-[#F74AA1] group-open:rotate-90 transition-transform flex-shrink-0" />
                   </summary>
-                  <div className="mt-4 pt-4 border-t border-white/10">
-                    <p className="text-body text-[#333333]">{faq.answer}</p>
+                        <div className="mt-6 pt-6 border-t border-gray-100">
+                          <p className="text-[#666666] leading-relaxed text-lg">{faq.answer}</p>
                 </div>
                 </details>
                 </div>
             ))}
+                </div>
+              )}
+
+              {/* Organisation */}
+              {activeFaqTab === 'organisation' && (
+                <div className="space-y-6">
+                  {[
+                    {
+                      question: "Quels délais d'organisation prévoir ?",
+                      answer: "Idéalement 2 à 4 semaines. Dernière minute possible selon disponibilités partenaires."
+                    },
+                    {
+                      question: "Qui sera mon interlocuteur ?",
+                      answer: "Un chef de projet dédié du cadrage au jour J (et au debrief), avec un point de contact unique."
+                    },
+                    {
+                      question: "Faites-vous des programmes annuels ?",
+                      answer: "Oui : 4 temps forts RH/an avec chef de projet dédié, calendrier, et suivi d'impact (parfait pour ancrer des rituels)."
+                    },
+                    {
+                      question: "Comment mesurez-vous l'impact RH ?",
+                      answer: "Mini-questionnaire post-événement, debrief à chaud, synthèse d'insights (cohésion, appartenance, bien-être perçu) et pistes d'amélioration pour les prochains temps forts."
+                    }
+                  ].map((faq, index) => (
+                    <div key={index} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                      <details className="group">
+                        <summary className="flex items-center justify-between cursor-pointer">
+                          <h3 className="text-xl font-bold text-[#1a1a1a] pr-4">{faq.question}</h3>
+                          <ChevronRight className="w-6 h-6 text-[#F74AA1] group-open:rotate-90 transition-transform flex-shrink-0" />
+                        </summary>
+                        <div className="mt-6 pt-6 border-t border-gray-100">
+                          <p className="text-[#666666] leading-relaxed text-lg">{faq.answer}</p>
+                        </div>
+                      </details>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Personnalisation */}
+              {activeFaqTab === 'personnalisation' && (
+                <div className="space-y-6">
+                  {[
+                    {
+                      question: "Peut-on personnaliser selon nos valeurs et contraintes ?",
+                      answer: "Oui : thématiques, tempo de la journée, attentions personnalisées, contraintes alimentaires, accessibilité, budget encadré. Nos prestataires restent en back-office (marque blanche possible)."
+                    },
+                    {
+                      question: "Proposez-vous des événements en marque blanche ?",
+                      answer: "Oui. Nous pouvons ne pas afficher nos partenaires et intégrer votre identité (supports, éléments de décor, wording)."
+                    },
+                    {
+                      question: "Comment sélectionnez-vous vos partenaires ?",
+                      answer: "Charte qualité : fiabilité, hospitalité, sécurité, capacité d'accueil, alignement de valeurs (local, authentique, responsable). Suivi continu des retours clients."
+                    }
+                  ].map((faq, index) => (
+                    <div key={index} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                      <details className="group">
+                        <summary className="flex items-center justify-between cursor-pointer">
+                          <h3 className="text-xl font-bold text-[#1a1a1a] pr-4">{faq.question}</h3>
+                          <ChevronRight className="w-6 h-6 text-[#F74AA1] group-open:rotate-90 transition-transform flex-shrink-0" />
+                        </summary>
+                        <div className="mt-6 pt-6 border-t border-gray-100">
+                          <p className="text-[#666666] leading-relaxed text-lg">{faq.answer}</p>
+                        </div>
+                      </details>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Tarifs */}
+              {activeFaqTab === 'tarifs' && (
+                <div className="space-y-6">
+                  {[
+                    {
+                      question: "Quels sont vos tarifs ?",
+                      answer: "Selon modules, saisonnalité, taille du groupe et niveau de personnalisation. De l'essentiel au premium, toujours avec budget sécurisé et devis transparent."
+                    },
+                    {
+                      question: "Quelles sont vos conditions d'annulation / report ?",
+                      answer: "Précisées au devis selon les partenaires. Nous privilégions le report plutôt que l'annulation et cherchons des solutions équitables."
+                    },
+                    {
+                      question: "Quels sont les moyens de paiement et modalités de facturation ?",
+                      answer: "Devis et bon pour accord, acompte à la validation, solde avant l'événement. Paiement par virement/CB, facturation détaillée (TVA). Veever immatriculée RCS Bordeaux 944 947 795."
+                    }
+                  ].map((faq, index) => (
+                    <div key={index} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                      <details className="group">
+                        <summary className="flex items-center justify-between cursor-pointer">
+                          <h3 className="text-xl font-bold text-[#1a1a1a] pr-4">{faq.question}</h3>
+                          <ChevronRight className="w-6 h-6 text-[#F74AA1] group-open:rotate-90 transition-transform flex-shrink-0" />
+                        </summary>
+                        <div className="mt-6 pt-6 border-t border-gray-100">
+                          <p className="text-[#666666] leading-relaxed text-lg">{faq.answer}</p>
+                        </div>
+                      </details>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Accessibilité */}
+              {activeFaqTab === 'accessibilite' && (
+                <div className="space-y-6">
+                  {[
+                    {
+                      question: "Accessibilité & régimes alimentaires ?",
+                      answer: "Options sans allergènes, végétarien/vegan, halal sur demande. Parcours accessibles selon les lieux (information fournie à la validation)."
+                    },
+                    {
+                      question: "Quelles langues sont possibles ?",
+                      answer: "Français et anglais (autres langues sur demande avec guide/animateur dédié)."
+                    },
+                    {
+                      question: "Proposez-vous des événements sans alcool ?",
+                      answer: "Bien sûr. Cartes softs locales, mocktails, dégustations non alcoolisées, accords mets & thés, etc."
+                    }
+                  ].map((faq, index) => (
+                    <div key={index} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                      <details className="group">
+                        <summary className="flex items-center justify-between cursor-pointer">
+                          <h3 className="text-xl font-bold text-[#1a1a1a] pr-4">{faq.question}</h3>
+                          <ChevronRight className="w-6 h-6 text-[#F74AA1] group-open:rotate-90 transition-transform flex-shrink-0" />
+                        </summary>
+                        <div className="mt-6 pt-6 border-t border-gray-100">
+                          <p className="text-[#666666] leading-relaxed text-lg">{faq.answer}</p>
+                        </div>
+                      </details>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Sécurité */}
+              {activeFaqTab === 'securite' && (
+                <div className="space-y-6">
+                  {[
+                    {
+                      question: "Sécurité & assurances ?",
+                      answer: "Veever SAS et ses partenaires sont couverts par leur RC Pro. Protocoles sécurité adaptés aux activités (brief, encadrement)."
+                    },
+                    {
+                      question: "Protection des données & confidentialité ?",
+                      answer: "Données limitées au strict nécessaire (organisation, sécurité). Aucune communication publique sans votre accord."
+                    }
+                  ].map((faq, index) => (
+                    <div key={index} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                      <details className="group">
+                        <summary className="flex items-center justify-between cursor-pointer">
+                          <h3 className="text-xl font-bold text-[#1a1a1a] pr-4">{faq.question}</h3>
+                          <ChevronRight className="w-6 h-6 text-[#F74AA1] group-open:rotate-90 transition-transform flex-shrink-0" />
+                        </summary>
+                        <div className="mt-6 pt-6 border-t border-gray-100">
+                          <p className="text-[#666666] leading-relaxed text-lg">{faq.answer}</p>
+                        </div>
+                      </details>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Options */}
+              {activeFaqTab === 'options' && (
+                <div className="space-y-6">
+                  {[
+                    {
+                      question: "Offrez-vous des options photo/vidéo ou goodies ?",
+                      answer: "En option : photographe/vidéaste, mini-montage souvenir, goodies responsables co-brandés."
+                    }
+                  ].map((faq, index) => (
+                    <div key={index} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                      <details className="group">
+                        <summary className="flex items-center justify-between cursor-pointer">
+                          <h3 className="text-xl font-bold text-[#1a1a1a] pr-4">{faq.question}</h3>
+                          <ChevronRight className="w-6 h-6 text-[#F74AA1] group-open:rotate-90 transition-transform flex-shrink-0" />
+                        </summary>
+                        <div className="mt-6 pt-6 border-t border-gray-100">
+                          <p className="text-[#666666] leading-relaxed text-lg">{faq.answer}</p>
+                        </div>
+                      </details>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -1399,7 +1706,7 @@ export default function Home() {
                         <div>
                           <p className="text-sm font-semibold text-green-700 mb-1">Engagement Veever PRO</p>
                           <p className="text-sm text-green-600">
-                            Réponse personnalisée sous 24h • Proposition sur-mesure • Coordination unique • Zéro stress pour vous
+                            Réponse personnalisée sous 24h • Proposition sur-mesure • Coordination unique • Gestion complète
                           </p>
                         </div>
                       </div>
@@ -1449,190 +1756,165 @@ export default function Home() {
         </div>
       )}
 
-      {/* Section Problème → Transformation */}
-      <section className="py-24 bg-[#FAF0ED]">
-        <div className="container-veever">
-          <div className="max-w-4xl mx-auto">
-            {/* Titre section */}
-            <div className="text-center mb-16">
-              <h2 className="text-h2 mb-8 text-[#1a1a1a]">
-                Transformez vos événements internes en leviers de culture, d'engagement et de fidélisation.
-              </h2>
-              
-              {/* Citation mise en avant */}
-              <div className="bg-gradient-to-r from-[#F74AA1]/10 to-[#F59E3F]/10 rounded-2xl p-8 border border-[#F74AA1]/20 max-w-4xl mx-auto mb-8">
-                <p className="text-xl font-semibold text-[#1a1a1a] italic leading-relaxed">
-                  À la croisée de l'événementiel et des enjeux humains, Veever PRO accompagne les entreprises dans la création de journées de cohésion sur-mesure, conçues pour renforcer les liens, faire vivre les valeurs et créer un sentiment d'appartenance durable.
-                </p>
-                    </div>
+        {/* Footer moderne et optimisé */}
+        <footer className="bg-gradient-to-br from-[#FAF0ED] via-white to-[#F5E6E0] text-[#1a1a1a] relative overflow-hidden">
+          {/* Pattern décoratif */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#F74AA1]/20 via-transparent to-[#F59E3F]/20"></div>
                     </div>
 
-            {/* 3 bénéfices clés */}
-            <div className="grid md:grid-cols-3 gap-8 mb-16">
-              {/* Bénéfice #1 */}
-              <div className="card-premium text-center flex flex-col justify-center min-h-[280px]">
-                <div className="w-12 h-12 bg-gradient-to-r from-[#F74AA1] to-[#FB793F] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                    <Users className="w-4 h-4 text-[#F74AA1]" />
+          <div className="container-veever relative z-10">
+            {/* Section principale */}
+            <div className="py-0">
+              <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
+                
+                {/* Brand & Description - 5 colonnes */}
+                <div className="lg:col-span-5">
+                  <div className="mb-0">
+                    {/* Logo */}
+                    <div className="mb-0" style={{marginBottom: '-50px', marginTop: '-100px'}}>
+                      <Image
+                        src="/images/logo/logo-veever-pro.png"
+                        alt="Veever Pro"
+                        width={7200}
+                        height={2400}
+                        className="h-96 w-auto"
+                      />
                     </div>
-                  </div>
-                <h3 className="text-lg font-bold text-[#1a1a1a] mb-3 leading-tight">
-                  Renforcer les liens au sein des équipes
-                </h3>
-                <p className="text-sm text-[#333333] leading-relaxed">
-                  Des expériences conçues pour créer de vrais moments de connexion et de cohésion authentique.
-                  <span className="block mt-2 font-medium text-[#F74AA1]">Cohésion d'équipe durable et engagement renforcé.</span>
-                </p>
+                    
+                    <p className="text-lg text-[#333333] leading-relaxed max-w-md mb-0" style={{marginTop: '-30px', marginBottom: '30px'}}>
+                      Transformez vos événements RH en leviers stratégiques de cohésion et d'engagement à Bordeaux.
+                    </p>
+                    
+                    {/* CTA principal */}
+                    <div className="flex flex-col sm:flex-row gap-4 mb-0" style={{marginTop: '-10px', marginBottom: '-30px'}}>
+                      <button 
+                        onClick={() => setIsCalendlyOpen(true)}
+                        className="px-6 py-3 bg-[#1a1a1a] text-white rounded-xl font-semibold hover:bg-[#333333] transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Planifier un appel
+                      </button>
+                      <button 
+                        onClick={() => setIsBuilderOpen(true)}
+                        className="px-6 py-3 bg-gradient-to-r from-[#F74AA1] to-[#F59E3F] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105"
+                      >
+                        Demander un devis
+                      </button>
+              </div>
+            </div>
+          </div>
+
+                {/* Navigation rapide - 3 colonnes */}
+                <div className="lg:col-span-3" style={{marginTop: '30px'}}>
+                  <h3 className="text-xl font-bold text-[#1a1a1a] mb-6">Navigation</h3>
+                  <nav className="space-y-4">
+                    <Link href="#occasions" className="block text-[#333333] hover:text-[#1a1a1a] transition-colors py-2 hover:translate-x-2 transform duration-300">
+                      Nos occasions RH
+                    </Link>
+                    <Link href="#formats" className="block text-[#333333] hover:text-[#1a1a1a] transition-colors py-2 hover:translate-x-2 transform duration-300">
+                      Formats d'événements
+                    </Link>
+                    <Link href="#pourquoi" className="block text-[#333333] hover:text-[#1a1a1a] transition-colors py-2 hover:translate-x-2 transform duration-300">
+                      Pourquoi Veever Pro
+                    </Link>
+                    <Link href="#benefices" className="block text-[#333333] hover:text-[#1a1a1a] transition-colors py-2 hover:translate-x-2 transform duration-300">
+                      Bénéfices RH
+                    </Link>
+                    <Link href="#faq" className="block text-[#333333] hover:text-[#1a1a1a] transition-colors py-2 hover:translate-x-2 transform duration-300">
+                      Questions fréquentes
+                    </Link>
+                  </nav>
+              </div>
+
+
+                {/* Contact & Localisation - 2 colonnes */}
+                <div className="lg:col-span-2" style={{marginTop: '30px'}}>
+                  <h3 className="text-xl font-bold text-[#1a1a1a] mb-6">Contact</h3>
+                  <div className="space-y-6">
+                    {/* Email */}
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-[#F74AA1] to-[#F59E3F] rounded-xl flex items-center justify-center flex-shrink-0">
+                        <Mail className="w-5 h-5 text-white" />
+            </div>
+            <div>
+                        <p className="text-[#1a1a1a] font-medium">contact@veeverpro.com</p>
+                        <p className="text-[#666666] text-sm">Réponse sous 24h</p>
+              </div>
+            </div>
+
+                    {/* Téléphone */}
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-[#F74AA1] to-[#F59E3F] rounded-xl flex items-center justify-center flex-shrink-0">
+                        <Phone className="w-5 h-5 text-white" />
                 </div>
-
-              {/* Bénéfice #2 */}
-              <div className="card-premium text-center flex flex-col justify-center min-h-[280px]">
-                <div className="w-12 h-12 bg-gradient-to-r from-[#FB793F] to-[#F59E3F] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                    <Building2 className="w-4 h-4 text-[#FB793F]" />
+            <div>
+                        <p className="text-[#1a1a1a] font-medium">+33 5 56 12 34 56</p>
+                        <p className="text-[#666666] text-sm">Lun-Ven 9h-18h</p>
               </div>
             </div>
-                <h3 className="text-lg font-bold text-[#1a1a1a] mb-3 leading-tight">
-                  Faire vivre les valeurs dans le réel
-                </h3>
-                <p className="text-sm text-[#333333] leading-relaxed">
-                  Vos valeurs d'entreprise s'incarnent concrètement dans des expériences partagées et mémorables.
-                  <span className="block mt-2 font-medium text-[#FB793F]">Culture d'entreprise vécue au quotidien.</span>
-            </p>
-          </div>
 
-              {/* Bénéfice #3 */}
-              <div className="card-premium text-center flex flex-col justify-center min-h-[280px]">
-                <div className="w-12 h-12 bg-gradient-to-r from-[#F59E3F] to-[#F74AA1] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                    <Heart className="w-4 h-4 text-[#F59E3F]" />
-              </div>
-            </div>
-                <h3 className="text-lg font-bold text-[#1a1a1a] mb-3 leading-tight">
-                  Créer un sentiment d'appartenance durable
-                </h3>
-                <p className="text-sm text-[#333333] leading-relaxed">
-                  Chaque moment partagé devient un levier d'attractivité et de fidélisation de vos talents.
-                  <span className="block mt-2 font-medium text-[#F59E3F]">Marque employeur vivante et attractive.</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gradient-to-br from-[#F5E6E0] to-[#FAF0ED] py-16 border-t border-[#F74AA1]/20">
-        <div className="container-veever">
-          <div className="grid md:grid-cols-4 gap-8 mb-12">
-            {/* Logo & Description */}
-            <div className="md:col-span-2">
-              <div className="text-3xl font-bold mb-6 text-[#1a1a1a]">
-                VEEVER<span className="veever-gradient-text">PRO</span>
-              </div>
-              <p className="text-body text-[#333333] mb-6 max-w-md">
-                Votre partenaire pour des événements d'entreprise qui renforcent votre marque employeur à Bordeaux.
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-[#F74AA1] to-[#F59E3F] rounded-xl flex items-center justify-center">
+                    {/* Localisation */}
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-[#F74AA1] to-[#F59E3F] rounded-xl flex items-center justify-center flex-shrink-0">
                   <MapPin className="w-5 h-5 text-white" />
-                </div>
-            <div>
-                  <p className="text-caption text-[#333333]">Basé à Bordeaux</p>
-                  <p className="text-caption text-[#333333]">Métropole de Bordeaux</p>
-                </div>
-              </div>
             </div>
-
-            {/* Services */}
             <div>
-              <h3 className="text-h3 mb-6 text-[#1a1a1a]">Services</h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link href="#occasions" className="text-[#333333] hover:text-[#1a1a1a] transition-colors flex items-center gap-2">
-                    <UserPlus className="w-4 h-4" />
-                    Onboarding
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#occasions" className="text-[#333333] hover:text-[#1a1a1a] transition-colors flex items-center gap-2">
-                    <PartyPopper className="w-4 h-4" />
-                    Célébrations
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#occasions" className="text-[#333333] hover:text-[#1a1a1a] transition-colors flex items-center gap-2">
-                    <Users2 className="w-4 h-4" />
-                    Cohésion d'équipe
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#occasions" className="text-[#333333] hover:text-[#1a1a1a] transition-colors flex items-center gap-2">
-                    <Leaf className="w-4 h-4" />
-                    Bien-être & QVT
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Contact */}
-            <div>
-              <h3 className="text-h3 mb-6 text-[#1a1a1a]">Contact</h3>
-              <ul className="space-y-3">
-                <li>
-                  <a href="mailto:contact@veeverpro.com" className="text-[#333333] hover:text-[#1a1a1a] transition-colors flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
-                    contact@veeverpro.com
-                  </a>
-                </li>
-                <li>
-                  <a href="tel:+33556123456" className="text-[#333333] hover:text-[#1a1a1a] transition-colors flex items-center gap-2">
-                    <Phone className="w-4 h-4" />
-                    +33 5 56 12 34 56
-                  </a>
-                </li>
-                <li>
-                  <div className="text-[#333333] flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    Lun-Ven 9h-18h
+                        <p className="text-[#1a1a1a] font-medium">Bordeaux, France</p>
+                        <p className="text-[#666666] text-sm">Métropole de Bordeaux</p>
                   </div>
-                </li>
-              </ul>
+            </div>
+          </div>
+            </div>
             </div>
           </div>
 
-          {/* CTA Footer */}
-          <div className="card-premium gradient-border mb-8">
-            <div className="text-center">
-              <h3 className="text-h3 mb-4">Prêt à transformer vos événements ?</h3>
-              <p className="text-body text-[#333333] mb-6">
-                Découvrez comment Veever Pro peut renforcer votre marque employeur
-              </p>
-              <button 
-                className="btn-primary magnetic-cta"
-                onClick={() => setIsBuilderOpen(true)}
-              >
-                Demander un devis gratuit
-              </button>
-            </div>
-          </div>
+            {/* Barre de séparation */}
+            <div className="border-t border-[#F74AA1]/20" style={{marginTop: '100px'}}></div>
 
-          {/* Bottom Bar */}
-          <div className="border-t border-[#F74AA1]/20 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <div className="text-caption text-[#333333]">
+            {/* Bottom bar */}
+            <div className="py-6" style={{marginTop: '0px'}}>
+              <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
+                {/* Copyright */}
+                <div className="text-[#666666] text-sm">
                 &copy; 2024 VEEVER PRO. Tous droits réservés.
               </div>
-              <div className="flex items-center gap-6">
-                <Link href="#faq" className="text-caption text-[#333333] hover:text-[#1a1a1a] transition-colors">
-                  FAQ
+                
+                {/* Liens légaux */}
+                <div className="flex items-center gap-8 text-sm">
+                  <Link href="#mentions-legales" className="text-[#666666] hover:text-[#1a1a1a] transition-colors">
+                    Mentions légales
                 </Link>
-                <Link href="#benefices" className="text-caption text-[#333333] hover:text-[#1a1a1a] transition-colors">
-                  Bénéfices
+                  <Link href="#confidentialite" className="text-[#666666] hover:text-[#1a1a1a] transition-colors">
+                    Confidentialité
                 </Link>
-                <Link href="#pourquoi" className="text-caption text-[#333333] hover:text-[#1a1a1a] transition-colors">
-                  Pourquoi nous
+                  <Link href="#cgv" className="text-[#666666] hover:text-[#1a1a1a] transition-colors">
+                    CGV
                 </Link>
+              </div>
+                
+                {/* Réseaux sociaux */}
+                <div className="flex items-center gap-6">
+                  <a 
+                    href="https://linkedin.com/company/veever-pro" 
+                    className="w-10 h-10 bg-gray-200 hover:bg-[#F74AA1] rounded-xl flex items-center justify-center transition-all duration-300 group"
+                    aria-label="LinkedIn"
+                  >
+                    <svg className="w-5 h-5 text-[#666666] group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                  </a>
+                  <a 
+                    href="https://instagram.com/veever.pro" 
+                    className="w-10 h-10 bg-gray-200 hover:bg-[#F74AA1] rounded-xl flex items-center justify-center transition-all duration-300 group"
+                    aria-label="Instagram"
+                  >
+                    <svg className="w-5 h-5 text-[#666666] group-hover:text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987s11.987-5.367 11.987-11.987C24.014 5.367 18.647.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.323-1.297C4.198 14.895 3.708 13.744 3.708 12.447s.49-2.448 1.297-3.323c.875-.807 2.026-1.297 3.323-1.297s2.448.49 3.323 1.297c.807.875 1.297 2.026 1.297 3.323s-.49 2.448-1.297 3.323c-.875.807-2.026 1.297-3.323 1.297zm7.83-9.405c-.49 0-.875-.385-.875-.875s.385-.875.875-.875.875.385.875.875-.385.875-.875.875zm-3.323 9.405c-2.026 0-3.323-1.297-3.323-3.323s1.297-3.323 3.323-3.323 3.323 1.297 3.323 3.323-1.297 3.323-3.323 3.323z"/>
+                    </svg>
+                  </a>
               </div>
             </div>
           </div>
